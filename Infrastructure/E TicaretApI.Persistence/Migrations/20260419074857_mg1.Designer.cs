@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_TicaretApI.Persistence.Migrations
 {
     [DbContext(typeof(E_TicaretApiDbContext))]
-    [Migration("20260415125003_mg1")]
+    [Migration("20260419074857_mg1")]
     partial class mg1
     {
         /// <inheritdoc />
@@ -83,8 +83,8 @@ namespace E_TicaretApI.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");

@@ -38,11 +38,12 @@ namespace E_TicaretApI.Persistence.Repositories
         public IQueryable<T> GetAll()
         {
             return Table;
+            
         }
 
         public async Task<T> GetByIdAsync(string id)
         {
-            T model= await Table.FirstOrDefaultAsync(data => data.Id == int.Parse(id));
+            T model= await Table.FindAsync(int.Parse(id));
             return model;
         }
 

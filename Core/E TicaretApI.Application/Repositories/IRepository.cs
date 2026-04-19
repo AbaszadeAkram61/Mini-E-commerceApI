@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace E_TicaretApI.Application.Repositories
 {
-    public interface IRepository<T> where T:BaseEntity 
+    public interface IRepository<T> where T:BaseEntity
     {
         DbSet<T> Table {  get; }
 
