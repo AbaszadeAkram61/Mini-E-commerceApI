@@ -21,7 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\E TicaretApI.Application\E TicaretApI.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\E TicaretApI.Infrastructure\E TicaretApI.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\E TicaretApI.Persistence\E TicaretApI.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

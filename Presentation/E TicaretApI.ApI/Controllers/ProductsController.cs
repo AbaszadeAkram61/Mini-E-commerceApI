@@ -1,4 +1,6 @@
 ﻿using E_TicaretApI.Application.Repositories;
+using E_TicaretApI.Application.RequestParametr;
+using E_TicaretApI.Application.Services;
 using E_TicaretApI.Application.ViewModel.Product;
 using E_TicaretApI.Domain.Entities;
 using FluentValidation;
@@ -14,22 +16,37 @@ namespace E_TicaretApI.ApI.Controllers
     {
         private readonly IRepository<Product> _repository;
         private readonly IValidator<Product> _validator;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IFileService _file;
 
-        public ProductsController(IRepository<Product> repository, IValidator<Product> validator)
+        public ProductsController(IRepository<Product> repository,
+            IValidator<Product> validator,
+            IWebHostEnvironment webHostEnvironment,
+            IFileService file)
         {
             _repository = repository;
             _validator = validator;
+            _webHostEnvironment = webHostEnvironment;
+            _file = file;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] Pagination pagination)
         {
-            return Ok(_repository.GetAll().Select(p => new
+            await Task.Delay(1500);
+            var totalCount = _repository.GetAll().Count();
+            var products = _repository.GetAll().Select(p => new
             {
                 p.Name,
                 p.Price,
                 p.Stock
-            }));
+            }).Skip(pagination.Page * pagination.Size).Take(pagination.Size);
+
+            return Ok(new
+            {
+                totalCount,
+                products
+            });
         }
 
         [HttpGet("{id}")]
@@ -78,9 +95,17 @@ namespace E_TicaretApI.ApI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-           await _repository.RemoveAsync(id);
-           await _repository.SaveAsync();
+            await _repository.RemoveAsync(id);
+            await _repository.SaveAsync();
             return Ok("Melumat silindi");
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Upload()
+        {
+            await _file.UploadAsync("product-images", Request.Form.Files);
+
+            return Ok();
         }
 
     }

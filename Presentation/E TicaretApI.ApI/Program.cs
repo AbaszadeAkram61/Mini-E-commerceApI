@@ -1,7 +1,9 @@
 using E_TicaretApI.Application.Validations;
 using E_TicaretApI.Domain.Entities;
 using E_TicaretApI.Persistence;
+using E_TicaretApI.Infrastructure;
 using FluentValidation;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddPersistenceServices();
+builder.Services.AddInfrastructureService();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -25,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
