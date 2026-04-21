@@ -3,6 +3,7 @@ using E_TicaretApI.Domain.Entities;
 using E_TicaretApI.Persistence;
 using E_TicaretApI.Infrastructure;
 using FluentValidation;
+using E_TicaretApI.Application;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureService();
+builder.Services.AddAplicationServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

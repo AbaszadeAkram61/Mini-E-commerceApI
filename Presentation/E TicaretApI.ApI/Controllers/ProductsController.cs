@@ -1,9 +1,15 @@
-﻿using E_TicaretApI.Application.Repositories;
+﻿using E_TicaretApI.Application.Features.Commands.Products.CreateProduct;
+using E_TicaretApI.Application.Features.Commands.Products.RemoveProduct;
+using E_TicaretApI.Application.Features.Commands.Products.UpdateProduct;
+using E_TicaretApI.Application.Features.Queries.Products.GetAllProduct;
+using E_TicaretApI.Application.Features.Queries.Products.GetByIdProduct;
+using E_TicaretApI.Application.Repositories;
 using E_TicaretApI.Application.RequestParametr;
 using E_TicaretApI.Application.Services;
 using E_TicaretApI.Application.ViewModel.Product;
 using E_TicaretApI.Domain.Entities;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -18,86 +24,56 @@ namespace E_TicaretApI.ApI.Controllers
         private readonly IValidator<Product> _validator;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IFileService _file;
+        private readonly IMediator _mediator;
 
         public ProductsController(IRepository<Product> repository,
             IValidator<Product> validator,
             IWebHostEnvironment webHostEnvironment,
-            IFileService file)
+            IFileService file,
+            IMediator mediator)
         {
             _repository = repository;
             _validator = validator;
             _webHostEnvironment = webHostEnvironment;
             _file = file;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Pagination pagination)
+        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest getAllProductQuery)
         {
-            await Task.Delay(1500);
-            var totalCount = _repository.GetAll().Count();
-            var products = _repository.GetAll().Select(p => new
-            {
-                p.Name,
-                p.Price,
-                p.Stock
-            }).Skip(pagination.Page * pagination.Size).Take(pagination.Size);
-
-            return Ok(new
-            {
-                totalCount,
-                products
-            });
+            GetAllProductQueryResponse response= await _mediator.Send(getAllProductQuery);
+            return Ok(response); 
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
 
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetById([FromRoute] GetByIdProductQueryRequest request)
         {
-            return Ok(await _repository.GetByIdAsync(id));
+           GetByIdProductQueryResponse response=await _mediator.Send(request);
+           return Ok(response);
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductDto createProductDto)
+        public async Task<IActionResult> Create(CreateProductCommandRequest request)
         {
-            var product = new Product
-            {
-                Name = createProductDto.Name,
-                Stock = createProductDto.Stock,
-                Price = createProductDto.Price
-            };
-            var validationresult = _validator.Validate(product);
-            if (!validationresult.IsValid)
-            {
-                return BadRequest(validationresult.Errors.Select(v => v.ErrorMessage));
-            }
-            await _repository.AddAsync(product);
-            await _repository.SaveAsync();
+            CreateProductCommandResponse response=await _mediator.Send(request);
             return Ok("Mehsul elave olundu");
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(UpdateProduct updateProduct)
+        public async Task<IActionResult> Update([FromBody]UpdateProductCommandRequest request)
         {
-            var product = await _repository.GetByIdAsync(updateProduct.Id);
-            product.Name = updateProduct.Name;
-            product.Stock = updateProduct.Stock;
-            product.Price = updateProduct.Price;
-            var validationresult = _validator.Validate(product);
-            if (!validationresult.IsValid)
-            {
-                return BadRequest(validationresult.Errors.Select(e => e.ErrorMessage));
-            }
-            await _repository.SaveAsync();
-            return Ok("Melumat deyisdirildi");
+            UpdateProductCommandResponse response=await _mediator.Send(request);
+            return Ok(response);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> Delete([FromRoute]RemoveProductCommandRequest request)
         {
-            await _repository.RemoveAsync(id);
-            await _repository.SaveAsync();
-            return Ok("Melumat silindi");
+            RemoveProductCommandResponse response=await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpPost("[action]")]
