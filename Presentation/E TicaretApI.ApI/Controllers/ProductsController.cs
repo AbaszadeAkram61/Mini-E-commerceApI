@@ -1,6 +1,7 @@
 ﻿using E_TicaretApI.Application.Features.Commands.Products.CreateProduct;
 using E_TicaretApI.Application.Features.Commands.Products.RemoveProduct;
 using E_TicaretApI.Application.Features.Commands.Products.UpdateProduct;
+using E_TicaretApI.Application.Features.Commands.Products.UploadProduct;
 using E_TicaretApI.Application.Features.Queries.Products.GetAllProduct;
 using E_TicaretApI.Application.Features.Queries.Products.GetByIdProduct;
 using E_TicaretApI.Application.Repositories;
@@ -77,11 +78,12 @@ namespace E_TicaretApI.ApI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload([FromForm] UploadProductCommandRequest request)
         {
-            await _file.UploadAsync("product-images", Request.Form.Files);
-
+            await _mediator.Send(request);
             return Ok();
+
+          
         }
 
     }
