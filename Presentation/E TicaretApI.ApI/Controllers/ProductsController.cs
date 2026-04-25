@@ -11,6 +11,7 @@ using E_TicaretApI.Application.ViewModel.Product;
 using E_TicaretApI.Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace E_TicaretApI.ApI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes ="Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly IRepository<Product> _repository;
